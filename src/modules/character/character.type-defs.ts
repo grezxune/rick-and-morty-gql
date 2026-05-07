@@ -1,10 +1,4 @@
 export const characterTypeDefs = /* GraphQL */ `
-  enum CharacterStatus {
-    ALIVE
-    DEAD
-    UNKNOWN
-  }
-
   enum CharacterLookupErrorCode {
     INVALID_INPUT
     NOT_FOUND
@@ -31,6 +25,5 @@ export const characterTypeDefs = /* GraphQL */ `
 
   extend type Query {
     character(id: ID!): CharacterLookupResult!
-    charactersByStatus(status: CharacterStatus!, limit: Int = 5): [Character!]!
   }
 `;

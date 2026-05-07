@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { type AppContext } from '../src/context.js';
 import { type RestCharacterRecord, UpstreamServiceError } from '../src/datasources/rick-and-morty-api.js';
-import { type CharacterStatus } from '../src/modules/character/character.types.js';
 import { createServer } from '../src/server.js';
 
 const lookupQuery = /* GraphQL */ `
@@ -22,33 +21,21 @@ const lookupQuery = /* GraphQL */ `
   }
 `;
 
-const collectionQuery = /* GraphQL */ `
-  query Collection($status: CharacterStatus!, $limit: Int) {
-    charactersByStatus(status: $status, limit: $limit) {
-      id
-      name
-    }
-  }
-`;
 
 const primary: RestCharacterRecord = { id: '1', name: 'Rick Sanchez', originName: 'Earth (C-137)', statusName: 'Alive', episodeCount: 2, traits: ['Human', 'Alive'] };
-const second: RestCharacterRecord = { id: '2', name: 'Morty Smith', originName: 'Earth', statusName: 'Alive', episodeCount: 1, traits: ['Human'] };
-const third: RestCharacterRecord = { id: '4', name: 'Beth Smith', originName: 'Earth', statusName: 'Alive', episodeCount: 1, traits: ['Human'] };
 
 const createMockContext = () => {
   const getCharacterById = vi.fn(async (_id: string) => null as RestCharacterRecord | null);
-  const getCharactersByStatus = vi.fn(async (_status: CharacterStatus) => [] as RestCharacterRecord[]);
 
   const context: AppContext = {
     dataSources: {
       rickAndMortyApi: {
         getCharacterById,
-        getCharactersByStatus,
       },
     },
   };
 
-  return { context, getCharacterById, getCharactersByStatus };
+  return { context, getCharacterById };
 };
 
 const executeSingle = async (query: string, variables: Record<string, unknown>, contextValue: AppContext) => {
@@ -141,39 +128,6 @@ describe('character queries', () => {
           message: 'Rick and Morty API is currently unavailable.',
         },
       },
-    });
-  });
-
-  it('sorts characters by name before applying the limit', async () => {
-    const { context, getCharactersByStatus } = createMockContext();
-    getCharactersByStatus.mockResolvedValue([second, primary, third]);
-
-    const result = await executeSingle(collectionQuery, { status: 'ALIVE', limit: 2 }, context);
-
-    expect(result.errors).toBeUndefined();
-    expect(result.data).toEqual({
-      charactersByStatus: [
-        {
-          id: '4',
-          name: 'Beth Smith',
-        },
-        {
-          id: '2',
-          name: 'Morty Smith',
-        },
-      ],
-    });
-  });
-
-  it('treats a negative limit as zero', async () => {
-    const { context, getCharactersByStatus } = createMockContext();
-    getCharactersByStatus.mockResolvedValue([second, primary, third]);
-
-    const result = await executeSingle(collectionQuery, { status: 'ALIVE', limit: -3 }, context);
-
-    expect(result.errors).toBeUndefined();
-    expect(result.data).toEqual({
-      charactersByStatus: [],
     });
   });
 });

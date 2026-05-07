@@ -1,14 +1,10 @@
 import { type AppContext } from '../../context.js';
-import { type CharacterLookupResult, type CharacterModel, type CharacterStatus } from './character.types.js';
+import { type CharacterLookupResult, type CharacterModel } from './character.types.js';
 
 interface CharacterQueryArgs {
   id: string;
 }
 
-interface CharacterCollectionQueryArgs {
-  status: CharacterStatus;
-  limit?: number | null;
-}
 
 const normalizeCharacterId = (id: string): string => id.trim();
 
@@ -24,9 +20,7 @@ export const characterResolvers = {
           character: null,
           error: {
             code: 'INVALID_INPUT',
-            message: 'TODO: return a clearer invalid-input message',
-          },
-        };
+            message: 'TODO: return a clearer invalid-input message' } };
       }
 
       // TODO:
@@ -36,16 +30,6 @@ export const characterResolvers = {
       // - return the mapped character on success
       throw new Error('TODO: implement Query.character');
     },
-
-    charactersByStatus: async (_parent: unknown, _arguments: CharacterCollectionQueryArgs, _context: AppContext): Promise<CharacterModel[]> => {
-      // TODO:
-      // - fetch characters for the requested status
-      // - map each DTO into the GraphQL model
-      // - sort by name
-      // - apply limit after sorting
-      // - treat negative limits as 0
-      throw new Error('TODO: implement Query.charactersByStatus');
-    },
   },
 
   Character: {
@@ -54,6 +38,4 @@ export const characterResolvers = {
       // - derive a readable summary from the mapped CharacterModel
       // - include name, id, status, metric, and detail/fallback
       throw new Error('TODO: implement Character.summary');
-    },
-  },
-};
+    } } };

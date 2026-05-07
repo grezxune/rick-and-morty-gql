@@ -17,7 +17,6 @@ https://rickandmortyapi.com/api
 The schema exposes:
 
 - `character(id: ID!): CharacterLookupResult!`
-- `charactersByStatus(status: CharacterStatus!, limit: Int = 5): [Character!]!`
 
 The public `Character` type stays intentionally small: `id`, `name`, `detail`, `tags`, and `summary`.
 
@@ -34,8 +33,6 @@ Functional requirements:
 - validate and normalize `id` for `character`
 - return `INVALID_INPUT`, `NOT_FOUND`, and `UPSTREAM_ERROR` in the lookup result when appropriate
 - map REST DTOs into the GraphQL model with null/default/sorted-array handling
-- sort `charactersByStatus` results by `name`, then apply `limit`
-- treat negative limits as `0`
 - compute a deterministic `Character.summary`
 
 ## How To Run
